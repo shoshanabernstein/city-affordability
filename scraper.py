@@ -16,15 +16,21 @@ def get_cities():
     table = soup.find('table', id='t2')
     rows = table.find_all('tr')[1:]
 
+  
     # for each row in the table, add it to the data list as a dictionary with the city name and cost of living index
     for row in rows:
-        city = row.find_all('td')[1].text.strip()
+        parts = row.find_all('td')[1].text.strip().split(',')
+        city = parts[0].strip()
+        country = parts[-1].strip()  # last item is always the country
         cost_of_living_index = row.find_all('td')[3].text.strip()
         # only add the city to the data list if it has a cost of living index
         if city and cost_of_living_index:
             data.append({
                 "city": city,
+                "country": country,
                 "cost_index": cost_of_living_index
             })
 
     return data
+
+

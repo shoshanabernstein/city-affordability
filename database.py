@@ -11,6 +11,7 @@ def create_database():
         CREATE TABLE IF NOT EXISTS cities (
             id INTEGER PRIMARY KEY,
             city TEXT,
+            country TEXT,
             cost_of_living_index REAL
         )
     ''')
@@ -25,9 +26,12 @@ def insert_cities(cities):
         
         for city in cities:
             c.execute('''
-                INSERT INTO cities (city, cost_of_living_index) VALUES (?, ?)
-            ''', (city['city'], city['cost_index']))
+                INSERT INTO cities (city, country, cost_of_living_index) VALUES (?, ?, ?)
+            ''', (city['city'], city['country'], city['cost_index']))
    
+        conn.commit()
+
+# Main function to create the database and insert the city data
 if __name__ == "__main__":
     create_database()
     cities = get_cities()
