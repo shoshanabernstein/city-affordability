@@ -17,7 +17,7 @@ def create_database():
     
     conn.commit()
     conn.close()
-    
+
 # Insert the city data into the database
 def insert_cities(cities):
     with sqlite3.connect('city_affordability.db') as conn:
@@ -28,3 +28,7 @@ def insert_cities(cities):
                 INSERT INTO cities (city, cost_of_living_index) VALUES (?, ?)
             ''', (city['city'], city['cost_index']))
    
+if __name__ == "__main__":
+    create_database()
+    cities = get_cities()
+    insert_cities(cities)
