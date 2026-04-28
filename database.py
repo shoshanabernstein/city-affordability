@@ -1,5 +1,6 @@
 """ Creates a SQLite database and inserts the city affordability data into it. """
 import sqlite3
+import pandas as pd
 from scraper import scrape_cities
 
 # Create the database
@@ -32,27 +33,41 @@ def insert_cities(cities):
 # Function to get cities by country
 def get_cities_by_country(countries):
     """Returns a list of cities in the specified countries."""
+    if not countries:
+        return []
+
     with sqlite3.connect('city_affordability.db') as conn:
         c = conn.cursor()
         placeholders = ",".join(["?"] * len(countries))
+
         query = f"""
-                SELECT city, cost_of_living_index
-                FROM cities WHERE country IN ({placeholders})
-                """
+        SELECT city, country, cost_of_living_index
+        FROM cities
+        WHERE country IN ({placeholders})
+        """
         c.execute(query, countries)
         rows = c.fetchall()
         
         cities = []
 
         for row in rows:
-                city, cost_index = row
+                city, country, cost_index = row
 
                 cities.append({
                     "city": city,
-                    "cost_index": cost_index
+                    "country": country,
+                    "cost_of_living_index": float(cost_index)
                 })
 
     return cities
+
+
+def get_countries_list():
+    conn = sqlite3.connect('city_affordability.db')
+    query = "SELECT country FROM cities GROUP BY country"
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    return df["country"].tolist()
     
 # Main function to create the database and insert the city data
 if __name__ == "__main__":
